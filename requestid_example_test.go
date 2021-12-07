@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ascarter/requestid"
+	"github.com/elblox/requestid"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

@@ -1,8 +1,12 @@
-# requestid [![GoDoc](https://godoc.org/github.com/ascarter/requestid?status.svg)](http://godoc.org/github.com/ascarter/requestid)[![Go Report Card](https://goreportcard.com/badge/github.com/ascarter/requestid)](https://goreportcard.com/report/github.com/ascarter/requestid)
+# requestid
 
-RequestID middleware for Go. RequestID adds a UUID as `X-Request-ID` header if not already set. It also adds it to the http.Request Context. Use `requestid.FromContext` to get the generated request id.
+RequestID middleware for Go forked from [ascarter/requestid](https://github.com/ascarter/requestid)
+with custom extensions to pass the request ID with [Twirp](https://github.com/twitchtv/twirp)
+RequestID adds a UUID as `X-Request-ID` header if not already set. It also adds
+it to the http.Request Context. Use `requestid.FromContext` to get the generated
+request id.
 
-# Example
+## Example
 
 ```go
 
@@ -14,7 +18,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ascarter/requestid"
+	"github.com/elblox/requestid"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
