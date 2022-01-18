@@ -16,7 +16,10 @@ func TestRequestID(t *testing.T) {
 	rids := []string{"", "remoteID_12345"}
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		rid := r.Header.Get("X-Request-ID")
+		rid, _ := FromContext(r.Context())
+		if rid != r.Header.Get(HeaderName) {
+			t.Errorf("requestid in headers and context do not match: %q, %q", rid, r.Header.Get(HeaderName))
+		}
 		fmt.Fprintf(w, "%s", rid)
 	}
 
@@ -31,7 +34,7 @@ func TestRequestID(t *testing.T) {
 
 		if rid != "" {
 			// Pre-set request ID
-			req.Header.Set("X-Request-ID", rid)
+			req.Header.Set(HeaderName, rid)
 		}
 
 		h.ServeHTTP(w, req)
@@ -45,9 +48,15 @@ func TestRequestID(t *testing.T) {
 			if body != rid {
 				t.Errorf("request '%s': %s != %[1]s", rid, body)
 			}
+			if w.Header().Get(HeaderName) != rid {
+				t.Errorf("request header is not set in response headers")
+			}
 		} else {
 			if !validRequestID.MatchString(body) {
 				t.Errorf("request '%s': %s is not valid format", rid, body)
+			}
+			if w.Header().Get(HeaderName) != body {
+				t.Errorf("request header is not set in response headers")
 			}
 		}
 	}
@@ -57,7 +66,7 @@ func TestRequestHandlerMiddleware(t *testing.T) {
 	expected := "testrequest"
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "%s,%s", r.Header.Get("X-Request-ID"), expected)
+		fmt.Fprintf(w, "%s,%s", r.Header.Get(HeaderName), expected)
 	}
 
 	mux := http.NewServeMux()
@@ -87,5 +96,8 @@ func TestRequestHandlerMiddleware(t *testing.T) {
 	}
 	if results[1] != expected {
 		t.Errorf("%v != %v", results[1], expected)
+	}
+	if res.Header.Get(HeaderName) != results[0] {
+		t.Errorf("request header is not set in response headers")
 	}
 }

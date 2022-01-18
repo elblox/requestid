@@ -42,6 +42,7 @@ func RequestIDHandler(h http.Handler) http.Handler {
 			rid = uuid.New().String()
 			r.Header.Set(HeaderName, rid)
 		}
+		w.Header().Set(HeaderName, rid)
 		ctx := NewContext(r.Context(), rid)
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
